@@ -20,10 +20,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class JwtService {
 
-    @Value("${app.security.jwt.secret}")
+    @Value("${app.security.jwt.secret:${JWT_SECRET:UmVwbGF5bHlEZW1vSnd0U2VjcmV0S2V5VGhhdElzTG9uZ0Vub3VnaEZvckhTMjU2}}")
     private String jwtSecret;
 
-    @Value("${app.security.jwt.expiration-seconds:3600}")
+    @Value("${app.security.jwt.expiration-seconds:${JWT_EXPIRATION_SECONDS:3600}}")
     private long jwtExpirationSeconds;
 
     public String generateToken(String username, UserRole role) {
