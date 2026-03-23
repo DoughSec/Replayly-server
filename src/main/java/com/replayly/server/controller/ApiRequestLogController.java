@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,11 +35,13 @@ public class ApiRequestLogController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'ADMIN')")
     public ApiRequestLogDetailResponse create(@Valid @RequestBody ApiRequestLogCreateRequest request) {
         return apiRequestLogService.create(request);
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('VIEWER', 'DEVELOPER', 'ADMIN')")
     public List<ApiRequestLogSummaryResponse> findAll(
             @RequestParam(required = false) RequestLogStatus status,
             @RequestParam(required = false) SeverityLevel severity,
@@ -53,27 +56,32 @@ public class ApiRequestLogController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('VIEWER', 'DEVELOPER', 'ADMIN')")
     public ApiRequestLogDetailResponse findById(@PathVariable Long id) {
         return apiRequestLogService.findById(id);
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'ADMIN')")
     public ApiRequestLogDetailResponse update(@PathVariable Long id, @RequestBody ApiRequestLogUpdateRequest request) {
         return apiRequestLogService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         apiRequestLogService.delete(id);
     }
 
     @PostMapping("/{id}/tags/{tagId}")
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'ADMIN')")
     public ApiRequestLogDetailResponse attachTag(@PathVariable Long id, @PathVariable Long tagId) {
         return apiRequestLogService.attachTag(id, tagId);
     }
 
     @DeleteMapping("/{id}/tags/{tagId}")
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'ADMIN')")
     public ApiRequestLogDetailResponse removeTag(@PathVariable Long id, @PathVariable Long tagId) {
         return apiRequestLogService.removeTag(id, tagId);
     }
