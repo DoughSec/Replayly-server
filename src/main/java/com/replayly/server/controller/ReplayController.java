@@ -6,6 +6,7 @@ import com.replayly.server.dto.RequestComparisonResponse;
 import com.replayly.server.service.ReplayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,22 +26,26 @@ public class ReplayController {
 
     @PostMapping("/request-logs/{id}/replay")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'ADMIN')")
     public ReplayAttemptResponse replay(@PathVariable Long id, @RequestBody(required = false) ReplayRequest request) {
         ReplayRequest safeRequest = request == null ? new ReplayRequest() : request;
         return replayService.replay(id, safeRequest);
     }
 
     @GetMapping("/request-logs/{id}/replays")
+    @PreAuthorize("hasAnyRole('VIEWER', 'DEVELOPER', 'ADMIN')")
     public List<ReplayAttemptResponse> findByRequestLog(@PathVariable Long id) {
         return replayService.findByRequestLogId(id);
     }
 
     @GetMapping("/replays/{replayId}")
+    @PreAuthorize("hasAnyRole('VIEWER', 'DEVELOPER', 'ADMIN')")
     public ReplayAttemptResponse findReplay(@PathVariable Long replayId) {
         return replayService.findById(replayId);
     }
 
     @GetMapping("/replays/{replayId}/comparison")
+    @PreAuthorize("hasAnyRole('VIEWER', 'DEVELOPER', 'ADMIN')")
     public RequestComparisonResponse findComparison(@PathVariable Long replayId) {
         return replayService.findComparison(replayId);
     }

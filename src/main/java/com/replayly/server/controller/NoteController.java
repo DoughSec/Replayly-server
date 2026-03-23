@@ -6,6 +6,7 @@ import com.replayly.server.service.NoteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,22 +28,26 @@ public class NoteController {
 
     @PostMapping("/request-logs/{id}/notes")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'ADMIN')")
     public IssueNoteResponse add(@PathVariable Long id, @Valid @RequestBody IssueNoteRequest request) {
         return noteService.add(id, request);
     }
 
     @GetMapping("/request-logs/{id}/notes")
+    @PreAuthorize("hasAnyRole('VIEWER', 'DEVELOPER', 'ADMIN')")
     public List<IssueNoteResponse> findByRequestLog(@PathVariable Long id) {
         return noteService.findByRequestLogId(id);
     }
 
     @PatchMapping("/notes/{noteId}")
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'ADMIN')")
     public IssueNoteResponse update(@PathVariable Long noteId, @Valid @RequestBody IssueNoteRequest request) {
         return noteService.update(noteId, request);
     }
 
     @DeleteMapping("/notes/{noteId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAnyRole('DEVELOPER', 'ADMIN')")
     public void delete(@PathVariable Long noteId) {
         noteService.delete(noteId);
     }

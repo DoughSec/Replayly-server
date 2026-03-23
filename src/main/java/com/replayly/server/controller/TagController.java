@@ -6,6 +6,7 @@ import com.replayly.server.service.TagService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,11 +25,13 @@ public class TagController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public TagResponse create(@Valid @RequestBody RequestTagCreateRequest request) {
         return tagService.create(request);
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('VIEWER', 'DEVELOPER', 'ADMIN')")
     public List<TagResponse> findAll() {
         return tagService.findAll();
     }
